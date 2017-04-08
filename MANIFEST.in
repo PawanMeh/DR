@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include deckready *.css
+recursive-include deckready *.csv
+recursive-include deckready *.html
+recursive-include deckready *.ico
+recursive-include deckready *.js
+recursive-include deckready *.json
+recursive-include deckready *.md
+recursive-include deckready *.png
+recursive-include deckready *.py
+recursive-include deckready *.svg
+recursive-include deckready *.txt
+recursive-exclude deckready *.pyc
