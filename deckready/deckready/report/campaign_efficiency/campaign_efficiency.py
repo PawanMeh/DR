@@ -17,7 +17,7 @@ def get_columns():
 	columns = [_("Campaign Name") + ":data:130", _("Lead Count") + ":Int:80",
 				_("Opp Count") + ":Int:80",
 				_("Quot Count") + ":Int:80", _("Order Count") + ":Int:100",
-				_("Order Value") + ":Float:100",_("Opp/Lead %") + ":Int:100",
+				_("Order Value") + ":Float:100",_("Opp/Lead %") + ":Float:100",
 				_("Quot/Lead %") + ":Float:100",_("Order/Quot %") + ":Float:100"
 	]
 	return columns
