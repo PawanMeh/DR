@@ -18,7 +18,7 @@ def get_columns():
 				_("Opp Count") + ":Int:80",
 				_("Quot Count") + ":Int:80", _("Order Count") + ":Int:100",
 				_("Order Value") + ":Float:100",_("Opp/Lead %") + ":Float:100",
-				_("Quot/Lead %") + ":Float:100",_("Order/Lead %") + ":Float:100"
+				_("Quot/Lead %") + ":Float:100",_("Order/Quot %") + ":Float:100"
 	]
 	return columns
 
@@ -38,7 +38,12 @@ def get_lead_data(filters):
 		row["Order Value"] = get_order_amount(row["Sales Person"])
 		row["Opp/Lead %"] = row["Opp Count"] / row["Lead Count"] * 100
 		row["Quot/Lead %"] = row["Quot Count"] / row["Lead Count"] * 100
-		row["Order/Lead %"] = row["Order Count"] / row["Lead Count"] * 100
+		if row["Quot Count"] == 0:
+			row["Quot Count"] = 1
+			is_quot_count_zero = True
+		row["Order/Quot %"] = row["Order Count"] / row["Quot Count"] * 100
+		if is_quot_count_zero ==  True:
+			row["Quot Count"] = 0
 	return dl
 	
 def get_lead_quotation_count(salesperson):
@@ -52,14 +57,12 @@ def get_lead_opp_count(salesperson):
 	return flt(opportunity_count[0][0]) if opportunity_count else 0
 	
 def get_quotation_ordered_count(salesperson):
-	quotation_ordered_count = frappe.db.sql("""select count(name) from `tabSales Order` 
-											where sales_person = %s""",salesperson)
+	quotation_ordered_count = frappe.db.sql("""select count(name) from `tabQuotation` 
+												where status = 'Ordered' and lead in (select name from `tabLead` where sales_person = %s)""",salesperson)
 	return flt(quotation_ordered_count[0][0]) if quotation_ordered_count else 0
 	
 def get_order_amount(salesperson):
-	#ordered_count_amount = frappe.db.sql("""select sum(base_net_amount) from `tabSales Order Item` 
-	#										where prevdoc_docname in (select name from `tabQuotation` 
-	#										where status = 'Ordered' and lead in (select name from `tabLead` where sales_person = %s))""",salesperson)
-	ordered_count_amount = frappe.db.sql("""select sum(base_grand_total) from `tabSales Order` 
-											where sales_person = %s""",salesperson)
+	ordered_count_amount = frappe.db.sql("""select sum(base_net_amount) from `tabSales Order Item` 
+											where prevdoc_docname in (select name from `tabQuotation` 
+											where status = 'Ordered' and lead in (select name from `tabLead` where sales_person = %s))""",salesperson)
 	return flt(ordered_count_amount[0][0]) if ordered_count_amount else 0
