@@ -85,6 +85,11 @@ app_license = "MIT"
 # 		"on_trash": "method"
 #	}
 # }
+doc_events = {
+	"Journal Entry": {
+		"validate": "deckready.dr_custom_method.validate_campaign"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
