@@ -11,12 +11,14 @@ def execute(filters=None):
 	columns, data = [], []
 	columns=get_columns()
 	data=get_lead_data(filters)
-	return columns, data
+	chart=get_chart_data(data)
+	return columns, data, None, chart
 	
 def get_columns():
-	columns = [_("Sales Person") + ":data:130", _("Lead Count") + ":Int:80",
+	columns = [_("Sales Person") + ":data:110", _("Lead Count") + ":Int:70",
+				_("Interaction") + ":Int:60",
 				_("Opp Count") + ":Int:80",
-				_("Quot Count") + ":Int:80", _("Order Count") + ":Int:100",
+				_("Quot Count") + ":Int:80", _("Order Count") + ":Int:80",
 				_("Order Value") + ":Float:100",_("Opp/Lead %") + ":Float:100",
 				_("Quot/Lead %") + ":Float:100",_("Order/Quot %") + ":Float:100"
 	]
@@ -33,6 +35,7 @@ def get_lead_data(filters):
 	dl=list(data)
 	for row in dl:
 		is_quot_count_zero = False
+		row["Interaction"] = interaction_count(row["Sales Person"])
 		row["Quot Count"]= get_lead_quotation_count(row["Sales Person"])
 		row["Opp Count"] = get_lead_opp_count(row["Sales Person"])
 		row["Order Count"] = get_quotation_ordered_count(row["Sales Person"])
@@ -72,3 +75,31 @@ def get_order_amount(salesperson):
 	ordered_count_amount = frappe.db.sql("""select sum(base_grand_total) from `tabSales Order` 
 											where sales_person = %s""",salesperson)
 	return flt(ordered_count_amount[0][0]) if ordered_count_amount else 0
+	
+def interaction_count(salesperson):
+	interaction_count = frappe.db.sql("""select count(name) from `tabInteraction Master` where reference_name in (select name from `tabLead` where sales_person = %s) """,salesperson)
+	return flt(interaction_count[0][0]) if interaction_count else 0
+	
+def get_chart_data(data):
+	x_intervals = ['x'] + [row["Sales Person"] for row in data]
+	columns = [x_intervals]
+	order_data = [row["Order Value"] for row in data]
+	lead_data = [row["Lead Count"] for row in data]
+	if order_data:
+		columns.append(["Order Amount"]+ order_data)
+	if lead_data:
+		columns.append(["Lead Count"]+ lead_data)
+	print columns
+	chart = {
+		"data": {
+			'x': 'x',
+			'columns': columns,
+			'colors': {
+				'Order Amount': '#5E64FF',
+				'Lead Count': '#ff5858'
+			}
+		}
+	}
+	chart["chart_type"] = "bar"
+	return chart
+	

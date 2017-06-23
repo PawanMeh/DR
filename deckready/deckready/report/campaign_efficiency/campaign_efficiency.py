@@ -11,13 +11,17 @@ def execute(filters=None):
 	columns, data = [], []
 	columns=get_columns()
 	data=get_lead_data(filters)
-	return columns, data
+	chart=get_chart_data(data)
+	return columns, data, None, chart
 	
 def get_columns():
 	columns = [_("Campaign Name") + ":data:130", _("Lead Count") + ":Int:80",
 				_("Opp Count") + ":Int:80",
 				_("Quot Count") + ":Int:80", _("Order Count") + ":Int:100",
-				_("Order Value") + ":Float:100",_("Opp/Lead %") + ":Float:100",
+				_("Order Value") + ":Float:100",
+				_("Expenses") + ":Float:100",
+				_("Opp/Lead %") + ":Float:100",
+				_("Opp/Lead %") + ":Float:100",
 				_("Quot/Lead %") + ":Float:100",_("Order/Quot %") + ":Float:100"
 	]
 	return columns
@@ -36,6 +40,7 @@ def get_lead_data(filters):
 		row["Opp Count"] = get_lead_opp_count(row["Campaign Name"])
 		row["Order Count"] = get_quotation_ordered_count(row["Campaign Name"])
 		row["Order Value"] = get_order_amount(row["Campaign Name"])
+		row["Expenses"] = get_campaign_expenses(row["Campaign Name"])
 		row["Opp/Lead %"] = row["Opp Count"] / row["Lead Count"] * 100
 		row["Quot/Lead %"] = row["Quot Count"] / row["Lead Count"] * 100
 		if row["Quot Count"] == 0:
@@ -66,3 +71,31 @@ def get_order_amount(campaign):
 											where prevdoc_docname in (select name from `tabQuotation` 
 											where status = 'Ordered' and lead in (select name from `tabLead` where campaign_name = %s))""",campaign)
 	return flt(ordered_count_amount[0][0]) if ordered_count_amount else 0
+	
+def get_campaign_expenses(campaign):
+	campaign_expenses = frappe.db.sql("""select a.campaign_name, sum(a.total_debit) from `tabJournal Entry` a, 
+										`tabJournal Entry Account` b where a.name = b.parent and b.account = 'Advertising and Promotions - AH' and a.campaign_name = %s """, campaign)
+	return flt(campaign_expenses[0][0]) if campaign_expenses else 0
+
+def get_chart_data(data):
+	x_intervals = ['x'] + [row["Campaign Name"] for row in data]
+	columns = [x_intervals]
+	order_data = [row["Order Value"] for row in data]
+	lead_data = [row["Expenses"] for row in data]
+	if order_data:
+		columns.append(["Order Amount"]+ order_data)
+	if lead_data:
+		columns.append(["Expenses"]+ lead_data)
+	print columns
+	chart = {
+		"data": {
+			'x': 'x',
+			'columns': columns,
+			'colors': {
+				'Order Amount': '#5E64FF',
+				'Lead Count': '#ff5858'
+			}
+		}
+	}
+	chart["chart_type"] = "bar"
+	return chart
