@@ -40,7 +40,7 @@ def get_lead_data(filters):
 		row["Opp Count"] = get_lead_opp_count(row["Campaign Name"])
 		row["Order Count"] = get_quotation_ordered_count(row["Campaign Name"])
 		row["Order Value"] = get_order_amount(row["Campaign Name"])
-		row["Expenses"] = get_campaign_expenses(row["Campaign Name"])
+		row["Expenses"] = get_campaign_expenses(row["Campaign Name"],filters)
 		row["Opp/Lead %"] = row["Opp Count"] / row["Lead Count"] * 100
 		row["Quot/Lead %"] = row["Quot Count"] / row["Lead Count"] * 100
 		if row["Quot Count"] == 0:
@@ -72,10 +72,18 @@ def get_order_amount(campaign):
 											where status = 'Ordered' and lead in (select name from `tabLead` where campaign_name = %s))""",campaign)
 	return flt(ordered_count_amount[0][0]) if ordered_count_amount else 0
 	
-def get_campaign_expenses(campaign):
+def get_campaign_expenses(campaign,filters):
+	conditions=""
+	if filters.from_date:
+		conditions += " date(a.creation) >= %(from_date)s"
+	if filters.to_date:
+		conditions += " and date(a.creation) <= %(to_date)s"
+	if campaign:
+		filters["campaign"] = campaign
+		conditions += " and a.campaign_name = %(campaign)s"
 	campaign_expenses = frappe.db.sql("""select a.campaign_name, sum(a.total_debit) from `tabJournal Entry` a, 
-										`tabJournal Entry Account` b where a.name = b.parent and b.account = 'Advertising and Promotions - AH' and a.campaign_name = %s """, campaign)
-	return flt(campaign_expenses[0][0]) if campaign_expenses else 0
+										`tabJournal Entry Account` b where a.name = b.parent and b.account = 'Advertising and Promotions - AH' and %s """% (conditions,),filters)
+	return flt(campaign_expenses[0][1]) if campaign_expenses else 0
 
 def get_chart_data(data):
 	x_intervals = ['x'] + [row["Campaign Name"] for row in data]
@@ -86,7 +94,6 @@ def get_chart_data(data):
 		columns.append(["Order Amount"]+ order_data)
 	if lead_data:
 		columns.append(["Expenses"]+ lead_data)
-	print columns
 	chart = {
 		"data": {
 			'x': 'x',
