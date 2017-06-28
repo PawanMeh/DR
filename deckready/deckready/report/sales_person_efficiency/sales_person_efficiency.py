@@ -73,7 +73,7 @@ def get_order_amount(salesperson):
 	#										where status = 'Ordered' and lead in (select name from `tabLead` 
 	#										where sales_person = %s))""",salesperson)
 	ordered_count_amount = frappe.db.sql("""select sum(base_grand_total) from `tabSales Order` 
-											where sales_person = %s""",salesperson)
+											where sales_person = %s and docstatus = 1""",salesperson)
 	return flt(ordered_count_amount[0][0]) if ordered_count_amount else 0
 	
 def interaction_count(salesperson):
