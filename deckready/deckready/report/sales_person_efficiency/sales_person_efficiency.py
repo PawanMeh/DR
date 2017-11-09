@@ -61,8 +61,6 @@ def get_lead_opp_count(salesperson):
 	return flt(opportunity_count[0][0]) if opportunity_count else 0
 	
 def get_quotation_ordered_count(salesperson):
-	#quotation_ordered_count = frappe.db.sql("""select count(name) from `tabQuotation` 
-	#											where status = 'Ordered' and lead in (select name from `tabLead` where sales_person = %s)""",salesperson)
 	quotation_ordered_count = frappe.db.sql("""select count(name) from `tabSales Order` 
 												where sales_person = %s""",salesperson)
 	return flt(quotation_ordered_count[0][0]) if quotation_ordered_count else 0
@@ -76,10 +74,6 @@ def get_order_amount(salesperson,filters):
 	if salesperson:
 		filters["sales_person"] = salesperson
 		conditions += " and sales_person = %(sales_person)s"
-	#ordered_count_amount = frappe.db.sql("""select sum(base_net_amount) from `tabSales Order Item` 
-	#										where prevdoc_docname in (select name from `tabQuotation` 
-	#										where status = 'Ordered' and lead in (select name from `tabLead` 
-	#										where sales_person = %s))""",salesperson)
 	ordered_count_amount = frappe.db.sql("""select sum(base_grand_total) from `tabSales Order` 
 											where docstatus = 1 %s """% (conditions,),filters)
 	return flt(ordered_count_amount[0][0]) if ordered_count_amount else 0
@@ -110,4 +104,3 @@ def get_chart_data(data):
 	}
 	chart["chart_type"] = "bar"
 	return chart
-	

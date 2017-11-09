@@ -7,12 +7,23 @@
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "modified": "2017-01-09 11:18:31.959124", 
+ "modified": "2017-05-24 08:02:14.832996", 
  "modified_by": "Administrator", 
  "module": "Deckready", 
  "name": "Sales Person Efficiency", 
  "owner": "Administrator", 
  "ref_doctype": "Lead", 
  "report_name": "Sales Person Efficiency", 
- "report_type": "Script Report"
+ "report_type": "Script Report", 
+ "roles": [
+  {
+   "role": "Sales Manager"
+  }, 
+  {
+   "role": "Sales User"
+  }, 
+  {
+   "role": "System Manager"
+  }
+ ]
 }
