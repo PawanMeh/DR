@@ -1,0 +1,26 @@
+{% macro render_tile(title, data) %}
+	{{ frappe.render_template("deckready/deckready/page/crm_summary/crm_summary_tile.html", {"data": data, "title": title }) }}
+{% endmacro %}
+
+<div class="crm-summary">
+	<table class="table">
+		<tbody>
+			<tr>
+				<td>
+					{{ render_tile("Lead Disposition", data.leads) }}
+				</td>
+				<td>
+					{{ render_tile("Quotation Order", data.orders) }}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					{{ render_tile("Status Analysis", data.status) }}
+				</td>
+				<td>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+

@@ -1,0 +1,26 @@
+{
+ "content": null, 
+ "creation": "2017-11-13 01:34:56.683223", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2017-11-14 02:52:01.313030", 
+ "modified_by": "Administrator", 
+ "module": "Deckready", 
+ "name": "crm-summary", 
+ "owner": "Administrator", 
+ "page_name": "CRM Summary", 
+ "roles": [
+  {
+   "role": "Accounts Manager"
+  }, 
+  {
+   "role": "Accounts User"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "system_page": 0, 
+ "title": "CRM Summary"
+}

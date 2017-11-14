@@ -1,0 +1,25 @@
+<div class="panel panel-default panel-rounded">
+	<div class="panel-heading">
+		<span class="panel-title">{{ title }}</span>
+	</div>
+	<div class="panel-body">
+		<table class="table table-condensed">
+			<thead>
+				<tr>
+				{% for column in data[0].keys() %}
+					<th>{{ column|title }}</th>
+				{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for row in data %}
+					<tr>
+						{% for column in data[0].keys() %}
+							<td>{{ row.get(column) }}</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
