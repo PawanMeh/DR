@@ -21,6 +21,12 @@ frappe.query_reports["Campaign Category Analysis"] = {
 			"fieldname":"campaign_sub_category",
 			"label": __("Campaign Sub Category"),
 			"fieldtype": "Check"
+		},
+		{
+			"fieldname":"campaign_name",
+			"label": __("Campaign Name"),
+			"fieldtype": "Link",
+			"options": "Campaign"
 		}
 	]
 }

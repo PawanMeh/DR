@@ -30,6 +30,9 @@ def get_lead_data(filters):
 		conditions += " and date(creation) >= %(from_date)s"
 	if filters.to_date:
 		conditions += " and date(creation) <= %(to_date)s"
+	if filters.campaign_name:
+		conditions += " and campaign_name = %(campaign_name)s"
+		
 
 	if filters.get("campaign_sub_category"):
 		show_campaign_sub_category = True
